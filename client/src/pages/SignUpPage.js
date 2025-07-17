@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../backend/secret/firebase";
-import { createUserWithEmailAndPassword  } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,19 +14,33 @@ function SignUpPage() {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const idToken = await userCredential.user.getIdToken();
       const response = await fetch("http://127.0.0.1:5000/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_token: idToken }),
+        body: JSON.stringify({ email, password}),
       });
 
       const data = await response.json();
       if (response.ok) {
         alert("Sign-Up Successful! Redirecting to your profile...");
-        localStorage.setItem("user", JSON.stringify({ email: email, user_id: data.user_id, id_token: idToken }));
-        navigate("/profile");
+        // Navigate to ProfilePage and pass user data
+        // Firebase Client SDK login
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const idToken = await userCredential.user.getIdToken();
+  
+        const loginresponse = await fetch("http://127.0.0.1:5000/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_token: idToken }),
+        });
+        if (loginresponse.ok) {
+          console.log("Login response", loginresponse);
+          localStorage.setItem("user", JSON.stringify({ email: email, user_id: data.user_id, id_token: idToken }));
+          console.error("localStorage",localStorage.getItem("user"));
+          navigate("/profile");
+        } else {
+          alert(`Error: ${data.message}`);
+        }
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -34,7 +48,7 @@ function SignUpPage() {
       console.error("Error during sign-up:", error);
       alert("An error occurred. Please try again.");
     }
-};
+  };
 
   return (
     <div className="min-h-screen flex justify-center items-start pt-24 bg-gray-100">
