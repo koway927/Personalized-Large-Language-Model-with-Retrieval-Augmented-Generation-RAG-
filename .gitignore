@@ -3,3 +3,13 @@ node_modules/
 venv/
 env/
 .env
+
+# Secret files and directories
+backend/secret/
+client/src/backend/secret/
+**/secret/
+**/*firebase*adminsdk*.json
+
+# Firebase configuration files
+firebase.js
+**/firebase.js
