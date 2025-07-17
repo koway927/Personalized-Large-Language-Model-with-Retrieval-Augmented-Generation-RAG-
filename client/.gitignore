@@ -23,3 +23,4 @@ yarn-debug.log*
 yarn-error.log*
 
 backend\secret\firebase.js
+backend\secret\personalized-llm-39f52-firebase-adminsdk-fbsvc-56fc515094.json
