@@ -1,0 +1,10 @@
+datasets
+faiss-cpu
+sentence-transformers
+transformers
+nltk
+flask
+requests
+dotenv
+lancedb
+torch
